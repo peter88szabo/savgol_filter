@@ -1,6 +1,4 @@
 // Maximum polynomial order
-const MMAX: usize = 6;
-
 fn savgol(
     data: &[f64],    // Input data series to be smoothed
     nl: usize,       // Number of points leftward (past points)
@@ -10,14 +8,14 @@ fn savgol(
 ) -> Vec<f64> {
     let np = data.len(); // Length of the data series
 
-    if np < nl + nr + 1 || nl < 0 || nr < 0 || ld > m || m > MMAX || nl + nr < m {
+    if np < nl + nr + 1 || nl < 0 || nr < 0 || ld > m | nl + nr < m {
         panic!("Invalid arguments in savgol");
     }
 
     // Initialize variables
-    let mut a = vec![vec![0.0; MMAX + 1]; MMAX + 1];
-    let mut b = vec![0.0; MMAX + 1];
-    let mut indx = vec![0; MMAX + 1];
+    let mut a = vec![vec![0.0; m + 1]; MMAX + 1];
+    let mut b = vec![0.0; m + 1];
+    let mut indx = vec![0; m + 1];
     let mut c = vec![0.0; np]; // Initialize the smoothed data vector
 
     // Construct the smoothing polynomial matrix
@@ -37,17 +35,14 @@ fn savgol(
         }
     }
 
-    // Perform LU decomposition on matrix a
-    let d = ludcmp(&mut a, m + 1, MMAX + 1, &mut indx);
+    let d = ludcmp(&mut a, m + 1, m + 1, &mut indx);
 
-    // Initialize b vector
     for j in 0..=m {
         b[j] = 0.0;
     }
     b[ld] = 1.0;
 
-    // Solve the system with LU back substitution
-    lubksb(&a, m + 1, MMAX + 1, &indx, &mut b);
+    lubksb(&a, m + 1, m + 1, &indx, &mut b);
 
     // Apply smoothing coefficients to data series
     for kk in 0..np {
@@ -66,6 +61,6 @@ fn savgol(
         }
     }
 
-    c // Return the smoothed data vector
+    c // the smoothed data vector
 }
 
